@@ -1,0 +1,63 @@
+# ==============================================================================
+# TeXNote (by IRSpace - Rijwan Ansari) - Git Ignore Configuration
+# ==============================================================================
+
+# Node & Package Managers
+node_modules/
+**/node_modules/
+.yarn/cache/
+**/.yarn/cache/
+.yarn/unplugged/
+**/.yarn/unplugged/
+.yarn/build-state/
+**/.yarn/build-state/
+.yarn/install-state.gz
+**/.yarn/install-state.gz
+.pnp.*
+**/.pnp.*
+.npm/
+**/.npm/
+.cache/
+**/.cache/
+
+# Large Archives & Engine Payloads (Distribute via GitHub Releases, NOT Git)
+*.tar
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.iso
+*.vhdx
+*.vmdk
+*.7z
+**/*.zip
+
+# Compiled Binaries & Build Outputs
+*.exe
+*.dll
+*.obj
+*.pdb
+*.bin
+output/
+**/output/
+scratch/
+**/scratch/
+
+# Logs & Runtime State
+*.log
+logs/
+**/logs/
+/var/log/
+/var/lib/sharelatex/
+/var/lib/overleaf/
+/tmp/
+
+# OS & IDE Files
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+.vscode/
+.idea/
+*.suo
+*.user

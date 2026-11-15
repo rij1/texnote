@@ -1,0 +1,17 @@
+[Unit]
+Description=Overleaf Desktop Community Edition
+After=network.target mongod.service redis-server.service
+Requires=mongod.service redis-server.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/mnt/c/Users/user/Desktop/Latex/overleaf
+ExecStart=/bin/bash /mnt/c/Users/user/Desktop/Latex/scripts/run_services.sh
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

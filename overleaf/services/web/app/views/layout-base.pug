@@ -1,0 +1,286 @@
+include ./_mixins/foot_scripts
+
+doctype html
+html(
+	lang=currentLngCode || 'en'
+	class=fixedSizeDocument ? 'fixed-size-document' : undefined
+)
+	- metadata = metadata || {}
+	- let isWebsiteRedesign = false
+	- let isApplicationPage = false
+	- let enableIeeeBranding = true
+
+	block entrypointVar
+
+	block isApplicationPageVar
+
+	block vars
+
+	head
+		include ./_metadata.pug
+
+		//- Stylesheet
+		link(rel='stylesheet' href=buildCssPath() id='main-stylesheet')
+		style.
+			/* Standalone Offline Desktop Mode Cleanups */
+			.hubspot-cookie-banner, #onetrust-consent-sdk, .cc-window, .cookie-banner, .announcements-container { display: none !important; }
+			.navbar-right .dropdown, a[href*="/user/settings"], a[href*="/admin"], a[href*="/user/subscription"] { display: none !important; }
+			.upgrade-btn, .btn-upgrade, .project-list-upgrade-button, [data-testid="upgrade-button"] { display: none !important; }
+			.banner, .upgrade-banner, .announcement-banner { display: none !important; }
+			/* High-Contrast Adaptive Brand Logo:
+			   - Dark logo (white text #ffffff) on dark themes/navbars (#1b222c)
+			   - Light logo (dark text #0f172a) on light themes/navbars (#ffffff) */
+			[data-theme="light"] .navbar-default,
+			body[data-theme="light"] .navbar-default,
+			.navbar-light {
+				background-color: #ffffff !important;
+			}
+			.navbar-logo,
+			.navbar-light .navbar-logo,
+			.navbar-default .navbar-logo,
+			[data-theme="light"] .navbar-logo,
+			body[data-theme="light"] .navbar-logo,
+			.ds-nav-page-switcher-logo img,
+			[data-theme="light"] .ds-nav-page-switcher-logo img,
+			body[data-theme="light"] .ds-nav-page-switcher-logo img {
+				background-image: url("/img/brand/logo-horizontal.svg") !important;
+				background-size: contain !important;
+				background-repeat: no-repeat !important;
+				content: url("/img/brand/logo-horizontal.svg") !important;
+			}
+			[data-theme="dark"] .navbar-default,
+			[data-theme="default"] .navbar-default,
+			body[data-theme="dark"] .navbar-default,
+			body[data-theme="default"] .navbar-default,
+			.navbar-dark {
+				background-color: #1b222c !important;
+			}
+			[data-theme="dark"] .navbar-logo,
+			[data-theme="default"] .navbar-logo,
+			body[data-theme="dark"] .navbar-logo,
+			body[data-theme="default"] .navbar-logo,
+			.navbar-dark .navbar-logo,
+			[data-theme="dark"] .navbar-brand .navbar-logo,
+			body[data-theme="dark"] .navbar-brand .navbar-logo,
+			[data-theme="default"] .navbar-brand .navbar-logo,
+			body[data-theme="default"] .navbar-brand .navbar-logo,
+			[data-theme="dark"] .ds-nav-page-switcher-logo img,
+			body[data-theme="dark"] .ds-nav-page-switcher-logo img,
+			[data-theme="default"] .ds-nav-page-switcher-logo img,
+			body[data-theme="default"] .ds-nav-page-switcher-logo img {
+				background-image: url("/img/brand/logo-horizontal-white.svg") !important;
+				background-size: contain !important;
+				background-repeat: no-repeat !important;
+				content: url("/img/brand/logo-horizontal-white.svg") !important;
+			}
+			/* High-Contrast Logo Adaptation: Dark logo (white text) on dark themes, Light logo (dark text) on light themes */
+			.navbar-logo,
+			.navbar-brand .navbar-logo,
+			[data-theme="dark"] .navbar-logo,
+			body:not([data-theme*="light"]) .navbar-logo,
+			.navbar-dark .navbar-logo {
+				background-image: url("/img/brand/logo-horizontal-white.svg") !important;
+				background-size: contain !important;
+				background-repeat: no-repeat !important;
+			}
+			[data-theme*="light"] .navbar-logo,
+			body[data-theme*="light"] .navbar-logo,
+			.navbar-light .navbar-logo {
+				background-image: url("/img/brand/logo-horizontal.svg") !important;
+				background-size: contain !important;
+				background-repeat: no-repeat !important;
+			}
+			[data-theme="dark"] .ds-nav-page-switcher-logo img,
+			body:not([data-theme*="light"]) .ds-nav-page-switcher-logo img {
+				content: url("/img/brand/logo-horizontal-white.svg") !important;
+			}
+			[data-theme*="light"] .ds-nav-page-switcher-logo img,
+			body[data-theme*="light"] .ds-nav-page-switcher-logo img {
+				content: url("/img/brand/logo-horizontal.svg") !important;
+			}
+			/* Remove Chat and Share options */
+			.ide-redesign-toolbar-actions .ide-redesign-toolbar-button-container:last-child,
+			.ide-redesign-toolbar-actions button.btn-primary,
+			.ide-redesign-toolbar-actions button.btn-success,
+			.ide-redesign-toolbar-actions .ide-redesign-toolbar-button-container:has(button.btn-primary),
+			.ide-redesign-toolbar-actions .ide-redesign-toolbar-button-container:has(button.btn-success),
+			.toolbar-btn-share, .toolbar-btn-chat, .chat-button, .share-button,
+			.chat, .chat-panel, .chat-wrapper, .chat-error,
+			.share-project-modal, #share-project-modal, .modal:has(.share-project-modal),
+			[aria-label*="chat" i], [aria-label*="Chat" i],
+			[title*="chat" i], [title*="Chat" i],
+			[data-track-label*="chat" i], [data-track-label*="share" i],
+			a[href*="filter=shared"], [data-filter="shared"],
+			li:has(a[href*="/project?filter=shared"]),
+			li:has(button[aria-label*="chat" i]),
+			button:has(.fa-share), button:has(.fa-comment),
+			.ds-nav-page-switcher-item[href*="shared"] { display: none !important; }
+			/* Ensure File Tree in editor sidebar is never crushed or squashed */
+			.file-tree-panel { min-height: 200px !important; flex-basis: 200px !important; }
+			.file-tree-panel-collapsed { max-height: none !important; min-height: 200px !important; }
+			/* Keep Editor and PDF visible and smoothly updating during column resizing */
+			.ide-redesign-main .ide-panel-group-resizing,
+			.ide-panel-group-resizing {
+				background-color: transparent !important;
+			}
+			.ide-redesign-main .ide-panel-group-resizing .ide-redesign-editor-content,
+			.ide-redesign-main .ide-panel-group-resizing .ide-react-editor-content,
+			.ide-panel-group-resizing .ide-redesign-editor-content,
+			.ide-panel-group-resizing .ide-react-editor-content {
+				display: flex !important;
+				visibility: visible !important;
+			}
+			.ide-redesign-main .ide-panel-group-resizing .pdf,
+			.ide-panel-group-resizing .pdf {
+				display: block !important;
+				visibility: visible !important;
+				pointer-events: none !important;
+			}
+			.ide-panel-group-resizing .ide-redesign-editor-container,
+			.ide-panel-group-resizing .ide-redesign-pdf-container {
+				display: flex !important;
+				visibility: visible !important;
+			}
+		script.
+			// Reset squashed file tree panel state if it was collapsed to 0 in localStorage
+			try {
+				const k = 'react-resizable-panels:ide-redesign-file-tree-outline';
+				const raw = localStorage.getItem(k);
+				if (raw) {
+					try {
+						const parsed = JSON.parse(raw);
+						let reset = false;
+						if (Array.isArray(parsed) && parsed[0] < 30) reset = true;
+						if (typeof parsed === 'object') {
+							const ft = parsed['ide-redesign-file-tree'] ?? parsed.layout?.[0];
+							if (ft !== undefined && Number(ft) < 30) reset = true;
+						}
+						if (reset || raw.includes(':0') || raw.includes('"0"') || raw.includes('[0,')) {
+							localStorage.removeItem(k);
+						}
+					} catch (_) {
+						localStorage.removeItem(k);
+					}
+				}
+			} catch (e) {}
+			// Synchronize full-project-search sidebar layout width with file-tree
+			try {
+				const outerKey = 'react-resizable-panels:ide-redesign-outer-layout';
+				const rawOuter = localStorage.getItem(outerKey);
+				if (rawOuter) {
+					const parsed = JSON.parse(rawOuter);
+					const searchKey = 'ide-redesign-editor-and-pdf-panel,ide-redesign-sidebar-panel-full-project-search';
+					const ftKey = 'ide-redesign-editor-and-pdf-panel,ide-redesign-sidebar-panel-file-tree';
+					if (parsed[searchKey] && !parsed[ftKey]) {
+						parsed[ftKey] = parsed[searchKey];
+						localStorage.setItem(outerKey, JSON.stringify(parsed));
+					}
+				}
+			} catch (_) {}
+		block css
+			each file in entrypointStyles(entrypoint)
+				link(rel='stylesheet' href=file)
+
+		block _headLinks
+
+		if typeof suppressRelAlternateLinks == 'undefined'
+			if settings.i18n.subdomainLang
+				each subdomainDetails in settings.i18n.subdomainLang
+					if !subdomainDetails.hide
+						link(
+							rel='alternate'
+							href=subdomainDetails.url + currentUrl
+							hreflang=subdomainDetails.lngCode
+						)
+
+		if entrypoint !== 'marketing'
+			link(
+				rel='preload'
+				href=buildJsPath(currentLngCode + '-json.js')
+				as='script'
+				nonce=scriptNonce
+			)
+
+		//- Scripts
+		if typeof suppressAnalytics == 'undefined'
+			include _google_analytics
+
+		block meta
+			meta(name='ol-csrfToken' content=csrfToken)
+			//- Configure dynamically loaded assets (via webpack) to be downloaded from CDN
+			//- See: https://webpack.js.org/guides/public-path/#on-the-fly
+			meta(name='ol-baseAssetPath' content=buildBaseAssetPath())
+			meta(name='ol-mathJaxPath' content=mathJaxPath)
+			meta(name='ol-dictionariesRoot' content=dictionariesRoot)
+
+			meta(name='ol-usersEmail' content=getUserEmail())
+			meta(name='ol-ab' data-type='json' content={})
+			meta(name='ol-user_id' content=getLoggedInUserId())
+			//- Internationalisation settings
+			meta(
+				name='ol-i18n'
+				data-type='json'
+				content={
+					currentLangCode: currentLngCode,
+				}
+			)
+			//- Expose some settings globally to the frontend
+			meta(name='ol-ExposedSettings' data-type='json' content=ExposedSettings)
+			meta(
+				name='ol-splitTestVariants'
+				data-type='json'
+				content=splitTestVariants || {}
+			)
+			meta(name='ol-splitTestInfo' data-type='json' content=splitTestInfo || {})
+
+			if typeof settings.algolia != 'undefined'
+				meta(
+					name='ol-algolia'
+					data-type='json'
+					content={
+						appId: settings.algolia.app_id,
+						apiKey: settings.algolia.read_only_api_key,
+						indexes: settings.algolia.indexes,
+					}
+				)
+
+			meta(
+				name='ol-isManagedAccount'
+				data-type='boolean'
+				content=isManagedAccount
+			)
+			each restriction in userRestrictions || []
+				meta(name='ol-cannot-' + restriction data-type='boolean' content)
+
+		block head-scripts
+
+	body(
+		class={
+			'thin-footer': showThinFooter,
+			'website-redesign': isWebsiteRedesign === true || websiteRedesignOverride,
+			'application-page': isApplicationPage,
+			'red-nav-bar-for-admins': !settings.isDevEnv && hasFeature('saas') && hasAdminAccess(),
+		}
+		data-theme='light'
+		data-initial-theme=initialTheme
+	)
+		if settings.recaptcha && settings.recaptcha.siteKeyV3
+			script(
+				type='text/javascript'
+				nonce=scriptNonce
+				src='https://www.recaptcha.net/recaptcha/api.js?render=' + settings.recaptcha.siteKeyV3
+				defer=deferScripts
+			)
+
+		if suppressSkipToContent === false || (typeof suppressSkipToContent == 'undefined' && typeof suppressNavbar == 'undefined')
+			a(class='skip-to-content' href='#main-content') #{translate('skip_to_content')}
+
+		block body
+
+		if settings.devToolbar.enabled
+			#dev-toolbar
+
+	block foot-scripts
+		+foot-scripts
+
+	include _customer_io

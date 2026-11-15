@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 146 36" width="146" height="36">
+  <defs>
+    <!-- High-Contrast Luminous Gradient for Dark Theme -->
+    <linearGradient id="texGradDark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#34d399" />
+    </linearGradient>
+    <linearGradient id="orbitGradDark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f2fe" />
+      <stop offset="100%" stop-color="#38bdf8" />
+    </linearGradient>
+  </defs>
+
+  <!-- Left Icon Mark: 32x32 centered vertically -->
+  <g transform="translate(2, 2)">
+    <!-- Document Shield with rounded corner and folded tab -->
+    <path d="M 5 3 C 5 1.5 6.5 0 8 0 L 21 0 C 22 0 23 1 23.8 1.8 L 28.2 6.2 C 29 7 29 8 29 9 L 29 26 C 29 27.5 27.5 29 26 29 L 8 29 C 6.5 29 5 27.5 5 26 Z" 
+          fill="rgba(56, 189, 248, 0.14)" stroke="#38bdf8" stroke-width="1.8" stroke-linejoin="round" />
+    <!-- Folded tab -->
+    <path d="M 21 0 L 21 7 L 28 7 Z" fill="#38bdf8" opacity="0.45" />
+    
+    <!-- Bold 'T' Monogram in Shield -->
+    <path d="M 10 9.5 L 24 9.5 M 17 9.5 L 17 22" 
+          stroke="#ffffff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+
+    <!-- Planetary Orbit Ring -->
+    <ellipse cx="17" cy="16" rx="15" ry="5.8" transform="rotate(-28 17 16)"
+             fill="none" stroke="url(#orbitGradDark)" stroke-width="1.8" stroke-dasharray="34 7" stroke-linecap="round" />
+    <!-- Orbiting Satellite Spark -->
+    <circle cx="28" cy="8.5" r="1.8" fill="#00f2fe" />
+  </g>
+
+  <!-- Typography: Pure Radiant White 'TeX' + High-Contrast Cyan-Mint 'Note' -->
+  <text x="39" y="25.5" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif" 
+        font-size="22" font-weight="800" letter-spacing="-0.3">
+    <tspan fill="#ffffff">TeX</tspan><tspan fill="url(#texGradDark)">Note</tspan>
+  </text>
+</svg>
