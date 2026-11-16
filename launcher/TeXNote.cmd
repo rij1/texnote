@@ -17,14 +17,14 @@ echo.
 color 0E
 echo [*] Initializing TeXNote Environment...
 
-:: Detect WSL distro (TeXNote dedicated distro or Ubuntu)
+:: Detect WSL distro (TeXNote dedicated distro or Ubuntu dev distro with services)
 set DISTRO=
 wsl.exe -d TeXNote -- echo ok >nul 2>&1
 if %ERRORLEVEL% EQU 0 (
     set DISTRO=TeXNote
 ) else (
-    wsl.exe -d Ubuntu -- echo ok >nul 2>&1
-    if %ERRORLEVEL% EQU 0 (
+    wsl.exe -d Ubuntu -u root -- systemctl list-unit-files 2>nul | findstr /i "overleaf.service texnote.service" >nul 2>&1
+    if !ERRORLEVEL! EQU 0 (
         set DISTRO=Ubuntu
     )
 )
@@ -32,7 +32,8 @@ if %ERRORLEVEL% EQU 0 (
 if "%DISTRO%"=="" (
     color 0C
     echo [-] Error: No compatible TeXNote WSL engine found!
-    echo     Please run 'TeXNote_Setup_v1.0.exe' to install the engine.
+    echo     Please run 'TeXNote_Setup_v1.0.exe' or 'TeXNote_WebSetup.exe'
+    echo     to install the TeXNote engine in WSL2.
     pause
     exit /b 1
 )
@@ -44,11 +45,18 @@ color 0E
 :: Start persistent keepalive so WSL2 does not idle suspend
 start /b wsl.exe -d %DISTRO% -u root -- sleep infinity >nul 2>&1
 
+:: Determine service name (texnote.service or overleaf.service)
+set SERVICE_NAME=overleaf.service
+wsl.exe -d %DISTRO% -u root -- systemctl list-unit-files texnote.service 2>nul | findstr /i "texnote.service" >nul 2>&1
+if %ERRORLEVEL% EQU 0 (
+    set SERVICE_NAME=texnote.service
+)
+
 :: Ensure services are active
-wsl.exe -d %DISTRO% -u root -- systemctl is-active --quiet overleaf.service
+wsl.exe -d %DISTRO% -u root -- systemctl is-active --quiet %SERVICE_NAME%
 if %ERRORLEVEL% NEQ 0 (
     echo [*] Starting TeXNote background services in %DISTRO%...
-    wsl.exe -d %DISTRO% -u root -- systemctl start overleaf.service
+    wsl.exe -d %DISTRO% -u root -- systemctl start %SERVICE_NAME%
 ) else (
     echo [*] Backend service is running in %DISTRO%.
 )

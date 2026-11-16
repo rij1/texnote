@@ -178,9 +178,35 @@ namespace TeXNoteLauncher
         {
             // First check dedicated TeXNote distro
             if (CheckDistroExists("TeXNote")) return "TeXNote";
-            // Fallback to Ubuntu distro
-            if (CheckDistroExists("Ubuntu")) return "Ubuntu";
+            // Fallback to Ubuntu distro ONLY if TeXNote backend services are installed in it
+            if (CheckDistroExists("Ubuntu") && HasTeXNoteService("Ubuntu")) return "Ubuntu";
             return null;
+        }
+
+        static bool HasTeXNoteService(string distro)
+        {
+            try
+            {
+                ProcessStartInfo psi = new ProcessStartInfo
+                {
+                    FileName = "wsl.exe",
+                    Arguments = string.Format("-d {0} -u root -- systemctl list-unit-files", distro),
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+                using (Process proc = Process.Start(psi))
+                {
+                    string output = proc.StandardOutput.ReadToEnd();
+                    proc.WaitForExit();
+                    return output.Contains("overleaf.service") || output.Contains("texnote.service");
+                }
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         static bool CheckDistroExists(string distroName)
@@ -212,10 +238,34 @@ namespace TeXNoteLauncher
         {
             try
             {
+                string serviceName = "overleaf.service";
+                try
+                {
+                    ProcessStartInfo checkPsi = new ProcessStartInfo
+                    {
+                        FileName = "wsl.exe",
+                        Arguments = string.Format("-d {0} -u root -- systemctl list-unit-files texnote.service", distro),
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        UseShellExecute = false,
+                        CreateNoWindow = true
+                    };
+                    using (Process checkProc = Process.Start(checkPsi))
+                    {
+                        string checkOut = checkProc.StandardOutput.ReadToEnd();
+                        checkProc.WaitForExit();
+                        if (checkOut.Contains("texnote.service"))
+                        {
+                            serviceName = "texnote.service";
+                        }
+                    }
+                }
+                catch { }
+
                 ProcessStartInfo psi = new ProcessStartInfo
                 {
                     FileName = "wsl.exe",
-                    Arguments = string.Format("-d {0} -u root -- systemctl is-active overleaf.service", distro),
+                    Arguments = string.Format("-d {0} -u root -- systemctl is-active {1}", distro, serviceName),
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
@@ -227,11 +277,11 @@ namespace TeXNoteLauncher
                     proc.WaitForExit();
                     if (output != "active")
                     {
-                        Console.WriteLine("[*] Starting backend services in " + distro + "...");
+                        Console.WriteLine("[*] Starting backend services (" + serviceName + ") in " + distro + "...");
                         ProcessStartInfo startPsi = new ProcessStartInfo
                         {
                             FileName = "wsl.exe",
-                            Arguments = string.Format("-d {0} -u root -- systemctl start overleaf.service", distro),
+                            Arguments = string.Format("-d {0} -u root -- systemctl start {1}", distro, serviceName),
                             UseShellExecute = false,
                             CreateNoWindow = true
                         };
@@ -242,7 +292,7 @@ namespace TeXNoteLauncher
                     }
                     else
                     {
-                        Console.WriteLine("[*] Backend service is running in " + distro + ".");
+                        Console.WriteLine("[*] Backend service (" + serviceName + ") is running in " + distro + ".");
                     }
                 }
             }
